@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.OleDb;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace Excel2Json.Concrate
@@ -43,15 +44,27 @@ namespace Excel2Json.Concrate
 
         }
 
-        public string ConvertJson(OleDbDataReader readexcel, IQuery queryobjets)
+        public string ConvertJson<T>(OleDbDataReader readexcel) where T : new()
         {
 
-            IEnumerable<IQuery> query = readexcel.Cast<DbDataRecord>().Select(row => queryobjets.InitObjects(row));
+            IEnumerable<T> query = readexcel.Cast<DbDataRecord>().Select(row => GetColumObject<T>(row));
+
 
             return JsonConvert.SerializeObject(query);
         }
-   
+
+        private T GetColumObject<T>(DbDataRecord row) where T :new()
+        {
+            var props = typeof(T).GetProperties();
+            T obj = new T();
+            for (int i = 0; i < props.Length; i++)
+            {
+                props[i].SetValue(obj, row[i]);
+            }
+            return obj;
         }
+
+    }
 
 
 }

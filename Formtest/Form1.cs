@@ -37,7 +37,7 @@ namespace Formtest
                 string yol = ofd.FileName;
                 Excel2JsonDal excel2Json = new Excel2JsonDal(yol,new Excel12());
                 OleDbDataReader read = excel2Json.Read("ADMİN");
-                string json = excel2Json.ConvertJson(read, new Sutun());
+                string json = excel2Json.ConvertJson<Sutun>(read);
                 MessageBox.Show(json);
             }
         }
